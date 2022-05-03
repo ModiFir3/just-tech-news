@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Post, Vote, Comment } = require("../../models")
+const { User, Post, Vote } = require("../../models")
 
 //GET /api/users
 router.get('/', (req, res) => {
@@ -25,14 +25,6 @@ router.get('/:id', (req, res) => {
             {
                 model: Post,
                 attributes: ['id', 'title', 'post_url', 'created_at']
-            },
-            {
-                model: Comment,
-                attributes: ['id', 'comment_text', 'created_at'],
-                include: {
-                    model: Post,
-                    attributes: ['title']
-                }
             },
             {
                 model: Post,
@@ -77,20 +69,20 @@ router.post('/login', (req, res) => {
             email: req.body.email
         }
     })
-        .then(dbUserData => {
-            if (!dbUserData) {
-                res.status(400).json({ message: 'No user with that email address!' })
-                return;
-            }
-            //verify user
-            const validPassword = dbUserData.checkPassword(req.body.password);
-            if (!validPassword) {
-                res.status(400).json({ message: 'incorrect password!' });
-                return;
-            }
+    .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(400).json({ message: 'No user with that email address!' })
+            return;
+        }
+        //verify user
+        const validPassword = dbUserData.checkPassword(req.body.password);
+        if (!validPassword) {
+            res.status(400).json({ message: 'incorrect password!' });
+            return;
+        }
 
-            res.json({ user: dbUserData, message: 'You are now logged in!' })
-        });
+        res.json({ user: dbUserData, message: 'You are now logged in!' })
+    });
 });
 
 // PUT /api/users/1
